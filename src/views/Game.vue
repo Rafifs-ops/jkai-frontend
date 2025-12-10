@@ -106,7 +106,7 @@ const finishGame = async () => {
     // Update poin ke backend
     if (authStore.isAuthenticated) {
         try {
-            await axios.put('http://localhost:5000/api/auth/points',
+            await axios.put('http://localhost:8080/api/auth/points',
                 { points: score.value },
                 { headers: { 'x-auth-token': authStore.token } }
             );

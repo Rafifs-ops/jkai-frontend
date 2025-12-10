@@ -44,7 +44,7 @@ const form = ref({ username: '', email: '', password: '' });
 
 const handleRegister = async () => {
     try {
-        await axios.post('http://localhost:5000/api/auth/register', form.value);
+        await axios.post('http://localhost:8080/api/auth/register', form.value);
         alert('Registration successful! Please login.');
         router.push('/login');
     } catch (error) {

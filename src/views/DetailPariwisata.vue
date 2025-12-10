@@ -131,12 +131,13 @@ onMounted(async () => {
         const res = await api.get(`/content/pariwisata/${route.params.id}`);
         pariwisata.value = {
             ...res.data,
-            distance: res.data.nearest_station.distance_km,
-            nearest_station: res.data.nearest_station.name,
-            description: res.data.details.summary,
-            image: res.data.images[0],
-            lat: -7.6079, // Dummy Coord jika di DB kosong (Borobudur)
-            lng: 110.2038
+            distance: res.data.nearest_station?.distance_km || 0, // Tambahkan safety check (?.)
+            nearest_station: res.data.nearest_station?.name || 'Unknown',
+            description: res.data.details?.summary || '',
+            image: res.data.images && res.data.images.length > 0 ? res.data.images[0] : '', // Ambil gambar pertama dari array
+            reviews_data: res.data.reviews_data || [], // Pastikan field ini ada
+            lat: res.data.location?.coordinates?.lat || -7.6079,
+            lng: res.data.location?.coordinates?.lng || 110.2038
         };
     } catch (error) {
         console.error("Error load data", error);
@@ -201,7 +202,16 @@ const confirmBooking = async () => {
 const analyzeReviews = async () => {
     analyzing.value = true;
     try {
-        const res = await api.post('/ai/analyze-reviews', { reviews: pariwisata.value.reviews });
+        // Format: "Rating: Komentar" agar AI lebih paham konteks
+        const reviewsText = pariwisata.value.reviews_data.map(r => `Rating ${r.rating}: ${r.comment}`);
+
+        if (reviewsText.length === 0) {
+            alert("Belum ada review untuk dianalisis");
+            analyzing.value = false;
+            return;
+        }
+
+        const res = await api.post('/ai/analyze-reviews', { reviews: reviewsText });
         reviewAnalysis.value = res.data;
     } catch (error) {
         console.error(error);
