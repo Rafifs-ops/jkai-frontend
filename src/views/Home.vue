@@ -1,7 +1,12 @@
 <template>
     <div class="pb-24">
-        <header class="bg-gradient-to-b from-kai-blue to-blue-800 text-white p-6 rounded-b-3xl shadow-lg">
-            <div class="mb-6">
+        <header class="bg-gradient-to-b from-kai-blue to-blue-800 text-white p-6 rounded-b-3xl shadow-lg relative">
+            <button @click="goToGame"
+                class="absolute top-4 right-4 bg-yellow-400 text-blue-900 px-3 py-1 rounded-full text-xs font-bold shadow-lg hover:bg-yellow-300 transition flex items-center gap-1 animate-pulse">
+                🎮 Main Game & Dapat Poin
+            </button>
+
+            <div class="mb-6 mt-4">
                 <h1 class="text-2xl font-bold">{{ langStore.t('greeting') }}</h1>
                 <p class="text-sm opacity-90">{{ langStore.t('subtitle') }}</p>
             </div>
@@ -10,6 +15,20 @@
                 <input v-model="aiQuery" @keyup.enter="getAiRecommendation" type="text"
                     :placeholder="langStore.t('searchPlaceholder')"
                     class="flex-grow px-4 py-2 text-gray-700 rounded-l-full focus:outline-none">
+                <button @click="getAiRecommendation"
+                    class="bg-kai-orange text-white p-2 rounded-full w-10 h-10 flex items-center justify-center hover:bg-orange-600 transition">
+                    <span v-if="loading">⏳</span>
+                    <span v-else>✨</span>
+                </button>
+            </div>
+
+            <div v-if="aiResult"
+                class="mt-4 bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/20 text-sm">
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="font-bold">💡 Saran AI:</h3>
+                    <button @click="aiResult = null" class="text-xs opacity-70">Tutup</button>
+                </div>
+                <p class="leading-relaxed">{{ aiResult }}</p>
             </div>
         </header>
 
@@ -44,18 +63,22 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router'; // Import Router
 import TourismCard from '../components/TourismCard.vue';
 import api from '../services/api';
 import { useLangStore } from '../stores/lang';
+import { useAuthStore } from '../stores/auth'; // Import Auth Store
 
 const langStore = useLangStore();
+const authStore = useAuthStore();
+const router = useRouter();
+
 const tourismList = ref([]);
 const blogList = ref([]);
 const aiQuery = ref('');
 const aiResult = ref(null);
 const loading = ref(false);
 
-// Dummy Data (Nanti diganti fetch API dari database)
 onMounted(async () => {
     try {
         const resWisata = await api.get('/content/pariwisata');
@@ -68,7 +91,16 @@ onMounted(async () => {
     }
 });
 
-// Fungsi Panggil AI
+// LOGIKA BARU: Navigasi Game
+const goToGame = () => {
+    if (authStore.isAuthenticated) {
+        router.push('/game');
+    } else {
+        alert("Silakan Login terlebih dahulu untuk bermain game dan mendapatkan poin!");
+        router.push('/login');
+    }
+};
+
 const getAiRecommendation = async () => {
     if (!aiQuery.value) return;
     loading.value = true;

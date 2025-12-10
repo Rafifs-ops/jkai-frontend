@@ -202,20 +202,17 @@ const confirmBooking = async () => {
 const analyzeReviews = async () => {
     analyzing.value = true;
     try {
-        // Format: "Rating: Komentar" agar AI lebih paham konteks
-        const reviewsText = pariwisata.value.reviews_data.map(r => `Rating ${r.rating}: ${r.comment}`);
+        // PERUBAHAN: Kita kirim nama tempat dan lokasi, bukan data review lokal
+        // Ini agar AI mencari sendiri ulasan dari "pengetahuan internet"-nya (Google Review/Medsos simulation)
+        const res = await api.post('/ai/analyze-reviews', {
+            place_name: pariwisata.value.name,
+            location: pariwisata.value.location?.address || pariwisata.value.location // Handle struktur data
+        });
 
-        if (reviewsText.length === 0) {
-            alert("Belum ada review untuk dianalisis");
-            analyzing.value = false;
-            return;
-        }
-
-        const res = await api.post('/ai/analyze-reviews', { reviews: reviewsText });
         reviewAnalysis.value = res.data;
     } catch (error) {
         console.error(error);
-        alert("Gagal menganalisis review");
+        alert("Gagal menganalisis review publik. Coba lagi nanti.");
     } finally {
         analyzing.value = false;
     }
