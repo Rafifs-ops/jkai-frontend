@@ -42,6 +42,7 @@
     <main class="container mx-auto pb-20"> <router-view />
     </main>
 
+    <ChatBot />
   </div>
 </template>
 
@@ -50,6 +51,7 @@ import { ref } from 'vue';
 import { useAuthStore } from './stores/auth';
 import { useRouter } from 'vue-router';
 import { useLangStore } from './stores/lang';
+import ChatBot from './components/ChatBot.vue';
 
 const langStore = useLangStore();
 const authStore = useAuthStore();

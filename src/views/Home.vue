@@ -22,6 +22,13 @@
                 </button>
             </div>
 
+            <div class="mt-4 flex flex-wrap gap-2 justify-center">
+                <button v-for="kw in quickKeywords" :key="kw" @click="aiQuery = kw; getAiRecommendation()"
+                    class="bg-white/20 hover:bg-white/30 text-white text-xs px-3 py-1 rounded-full border border-white/30 transition backdrop-blur-sm">
+                    ✨ {{ kw }}
+                </button>
+            </div>
+
             <div v-if="aiResult"
                 class="mt-4 bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/20 text-sm">
                 <div class="flex justify-between items-start mb-2">
@@ -78,6 +85,13 @@ const blogList = ref([]);
 const aiQuery = ref('');
 const aiResult = ref(null);
 const loading = ref(false);
+
+const quickKeywords = [
+    "Wisata alam murah Bandung",
+    "Kuliner legendaris Jogja",
+    "Hidden gem Banyuwangi",
+    "Trip keluarga 3 hari"
+];
 
 onMounted(async () => {
     try {
