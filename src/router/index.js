@@ -9,6 +9,9 @@ const TripPlanner = () => import('../views/TripPlanner.vue')
 const Game = () => import('../views/Game.vue')
 const Login = () => import('../views/Login.vue')
 const Register = () => import('../views/Register.vue')
+const TourismList = () => import('../views/TourismList.vue')
+const BlogList = () => import('../views/BlogList.vue')
+const Profile = () => import('../views/Profile.vue')
 
 const routes = [
     { path: '/', name: 'Home', component: Home },
@@ -17,7 +20,10 @@ const routes = [
     { path: '/blog/:id', name: 'BlogDetail', component: BlogDetail },
     { path: '/trip-planner', name: 'TripPlanner', component: TripPlanner },
     { path: '/game', name: 'Game', component: Game },
-    { path: '/register', name: 'Register', component: Register }
+    { path: '/register', name: 'Register', component: Register },
+    { path: '/tourism', name: 'TourismList', component: TourismList },
+    { path: '/blogs', name: 'BlogList', component: BlogList },
+    { path: '/profile', name: 'Profile', component: Profile }
 ]
 
 const router = createRouter({

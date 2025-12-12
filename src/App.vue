@@ -43,6 +43,8 @@
     </main>
 
     <ChatBot />
+
+    <BottomNav v-if="!['Login', 'Register'].includes(route.name)" />
   </div>
 </template>
 
@@ -52,11 +54,14 @@ import { useAuthStore } from './stores/auth';
 import { useRouter } from 'vue-router';
 import { useLangStore } from './stores/lang';
 import ChatBot from './components/ChatBot.vue';
+import BottomNav from './components/BottomNav.vue';
+import { useRoute } from 'vue-router';
 
 const langStore = useLangStore();
 const authStore = useAuthStore();
 const router = useRouter();
 const showDropdown = ref(false);
+const route = useRoute();
 
 const logout = () => {
   authStore.logout();
