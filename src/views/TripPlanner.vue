@@ -30,7 +30,7 @@
             </button>
         </div>
 
-        <div v-else class="animate-fade-in">
+        <div v-else class="animate-fade-in pb-10">
             <div class="flex justify-between items-center mb-4 bg-white p-3 rounded-lg shadow-sm sticky top-0 z-20">
                 <button @click="tripResult = null; currentTripId = null" class="text-sm text-gray-500">←
                     Kembali</button>
@@ -53,37 +53,116 @@
 
                 <div v-if="day.transport_detail"
                     class="mb-6 bg-gradient-to-r from-orange-50 to-white border-l-4 border-kai-orange p-4 rounded-r-lg shadow-sm">
-                    <h3 class="font-bold text-gray-800">Transportasi</h3>
-                    <p v-if="!isEditing" class="text-sm">{{ day.transport_detail.mode }}</p>
-                    <input v-else v-model="day.transport_detail.mode" class="w-full border p-1 rounded text-sm mt-1">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="font-bold text-gray-800 flex items-center gap-2">
+                                🚂 Transportasi
+                            </h3>
+                            <div v-if="!isEditing">
+                                <p class="text-sm mt-1 font-bold">{{ day.transport_detail.mode }}</p>
+                                <p class="text-xs text-gray-500 mt-1">{{ day.transport_detail.route }}</p>
+                            </div>
+                            <div v-else class="mt-2 space-y-2">
+                                <input v-model="day.transport_detail.mode" class="w-full border p-1 rounded text-sm"
+                                    placeholder="Mode Transport">
+                                <input v-model="day.transport_detail.route" class="w-full border p-1 rounded text-sm"
+                                    placeholder="Rute">
+                            </div>
+                        </div>
+
+                        <div class="text-right min-w-[100px]">
+                            <span class="text-[10px] text-gray-500 uppercase tracking-wide">Estimasi Tiket</span>
+                            <p v-if="!isEditing" class="font-bold text-kai-blue text-lg">{{ day.transport_detail.cost ||
+                                'Cek App' }}</p>
+                            <input v-else v-model="day.transport_detail.cost"
+                                class="w-full border p-1 rounded text-sm text-right">
+                        </div>
+                    </div>
                 </div>
 
                 <div class="space-y-6 border-l-2 border-gray-200 ml-3 pl-6 relative">
-                    <div v-for="(activity, idx) in day.activities" :key="idx" class="relative">
-                        <div
-                            class="absolute -left-[33px] w-6 h-6 rounded-full border-2 border-white bg-blue-500 flex items-center justify-center text-[10px] shadow-sm text-white">
-                            📍</div>
+                    <div v-for="(activity, idx) in day.activities" :key="idx" class="relative group">
 
-                        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                        <div class="absolute -left-[33px] w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-[10px] shadow-sm text-white transition-transform group-hover:scale-110"
+                            :class="activity.category === 'Kuliner' ? 'bg-red-500' : 'bg-blue-500'">
+                            {{ activity.category === 'Kuliner' ? '🍽️' : '📍' }}
+                        </div>
+
+                        <div
+                            class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
                             <div class="flex justify-between items-start gap-2">
                                 <div class="w-full">
                                     <div v-if="!isEditing">
-                                        <h3 class="font-bold text-gray-800 text-lg">{{ activity.place_name }}</h3>
-                                        <span class="text-xs font-mono bg-gray-100 px-2 py-1 rounded">{{ activity.time
-                                            }}</span>
+                                        <span
+                                            class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded mb-1 inline-block"
+                                            :class="activity.category === 'Kuliner' ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600'">
+                                            {{ activity.category || 'Wisata' }}
+                                        </span>
+                                        <h3 class="font-bold text-gray-800 text-lg leading-tight">{{ activity.place_name
+                                            }}</h3>
+                                        <span
+                                            class="text-xs font-mono bg-gray-100 px-2 py-1 rounded inline-block mt-1">🕒
+                                            {{ activity.time }}</span>
                                     </div>
+
                                     <div v-else class="space-y-2">
                                         <input v-model="activity.place_name"
                                             class="w-full font-bold border-b border-gray-300 focus:outline-none focus:border-kai-blue"
                                             placeholder="Nama Tempat">
-                                        <input v-model="activity.time" class="w-20 text-xs border p-1 rounded"
-                                            placeholder="Jam">
+                                        <div class="flex gap-2">
+                                            <input v-model="activity.time" class="w-20 text-xs border p-1 rounded"
+                                                placeholder="Jam">
+                                            <select v-model="activity.category" class="text-xs border p-1 rounded">
+                                                <option>Wisata</option>
+                                                <option>Kuliner</option>
+                                                <option>Landmark</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <p v-if="!isEditing" class="text-sm text-gray-600 mt-2">{{ activity.description }}</p>
+
+                            <p v-if="!isEditing" class="text-sm text-gray-600 mt-2 leading-relaxed">{{
+                                activity.description }}</p>
                             <textarea v-else v-model="activity.description"
-                                class="w-full text-sm border p-2 rounded mt-2" rows="2"></textarea>
+                                class="w-full text-sm border p-2 rounded mt-2" rows="2"
+                                placeholder="Deskripsi"></textarea>
+
+                            <div class="mt-4 pt-3 border-t border-dashed border-gray-200 flex flex-col gap-2">
+
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-1 text-sm font-bold text-gray-700">
+                                        <span>💵</span>
+                                        <span v-if="!isEditing">{{ activity.estimated_cost || 'Gratis / Standar'
+                                            }}</span>
+                                        <input v-else v-model="activity.estimated_cost"
+                                            class="border p-1 rounded text-xs w-32" placeholder="Harga">
+                                    </div>
+                                </div>
+
+                                <div v-if="activity.category === 'Kuliner'" class="mt-1">
+                                    <div v-if="!isEditing">
+                                        <a v-if="activity.social_link && activity.social_link !== ''"
+                                            :href="activity.social_link.startsWith('http') ? activity.social_link : 'https://' + activity.social_link"
+                                            target="_blank"
+                                            class="block w-full text-center bg-green-50 text-green-700 border border-green-200 py-2 rounded-lg text-xs font-bold hover:bg-green-100 transition flex justify-center items-center gap-2">
+                                            🔗 Cek Menu / Lokasi di Medsos
+                                        </a>
+
+                                        <div v-else
+                                            class="text-center bg-gray-50 border border-gray-200 py-2 rounded-lg">
+                                            <span class="text-[11px] text-gray-400 italic">
+                                                🚫 Toko ini tidak memiliki website dan media sosial
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <input v-else v-model="activity.social_link"
+                                        class="w-full border p-1 rounded text-xs text-blue-600"
+                                        placeholder="Paste Link Medsos/Maps disini...">
+                                </div>
+
+                            </div>
                         </div>
                     </div>
                 </div>
