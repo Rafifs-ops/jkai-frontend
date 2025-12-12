@@ -48,7 +48,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useAuthStore } from '../stores/auth';
-import axios from 'axios';
+import api from '../services/api';
 
 const authStore = useAuthStore();
 const isPlaying = ref(false);
@@ -106,10 +106,7 @@ const finishGame = async () => {
     // Update poin ke backend
     if (authStore.isAuthenticated) {
         try {
-            await axios.put('http://localhost:8080/api/auth/points',
-                { points: score.value },
-                { headers: { 'x-auth-token': authStore.token } }
-            );
+            await api.put('/auth/points', { points: score.value });
             // Update store lokal juga
             authStore.user.points += score.value;
         } catch (error) {
