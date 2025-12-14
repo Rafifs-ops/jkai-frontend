@@ -46,7 +46,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, onMounted, computed } from 'vue'; // Tambah onMounted
 import { useAuthStore } from '../stores/auth';
 import api from '../services/api';
 
@@ -55,37 +55,29 @@ const isPlaying = ref(false);
 const isFinished = ref(false);
 const score = ref(0);
 const currentQuestionIndex = ref(0);
+const questions = ref([]); // Kosongkan array awal
 
-// Data Dummy Soal (Nanti bisa dari DB)
-const questions = [
-    {
-        question: "Landmark apakah ini yang terletak di Sumatera Barat?",
-        image: "https://upload.wikimedia.org/wikipedia/commons/4/40/Jam_Gadang_Bukittinggi.jpg",
-        options: ["Jam Gadang", "Monas", "Gedung Sate", "Benteng Kuto Besak"],
-        answer: "Jam Gadang"
-    },
-    {
-        question: "Stasiun kereta api tertinggi di Indonesia adalah?",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Nagreg_Station.jpg/640px-Nagreg_Station.jpg",
-        options: ["Stasiun Bandung", "Stasiun Nagreg", "Stasiun Lebakjero", "Stasiun Malang"],
-        answer: "Stasiun Nagreg"
-    },
-    {
-        question: "Pulau yang terkenal dengan Komodo Dragon terletak di provinsi?",
-        image: "https://upload.wikimedia.org/wikipedia/commons/e/e3/Komodo_Island_01.jpg",
-        options: ["Bali", "NTB", "NTT", "Papua"],
-        answer: "NTT"
+// Fetch soal dari database saat game dimulai
+const fetchQuestions = async () => {
+    try {
+        const res = await api.get('/game');
+        questions.value = res.data;
+    } catch (e) {
+        alert("Gagal memuat soal");
     }
-];
+};
 
-const currentQuestion = computed(() => questions[currentQuestionIndex.value]);
+const startGame = async () => {
+    if (!authStore.isAuthenticated) return alert("Silakan Login dulu!");
+    await fetchQuestions(); // Load soal dulu
+    if (questions.value.length === 0) return alert("Belum ada soal tersedia.");
 
-const startGame = () => {
-    if (!authStore.isAuthenticated) return alert("Silakan Login dulu untuk main!");
     isPlaying.value = true;
     score.value = 0;
     currentQuestionIndex.value = 0;
 };
+
+const currentQuestion = computed(() => questions[currentQuestionIndex.value]);
 
 const answer = async (selectedOption) => {
     if (selectedOption === currentQuestion.value.answer) {

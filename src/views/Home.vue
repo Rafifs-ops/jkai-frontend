@@ -35,7 +35,7 @@
                     <h3 class="font-bold">💡 Saran AI:</h3>
                     <button @click="aiResult = null" class="text-xs opacity-70">Tutup</button>
                 </div>
-                <p class="leading-relaxed">{{ aiResult }}</p>
+                <div class="leading-relaxed space-y-2 ai-content" v-html="aiResult"></div>
             </div>
         </header>
 
@@ -149,6 +149,9 @@ const getAiRecommendation = async () => {
 .animate-fade-in {
     animation: fadeIn 0.5s ease-in-out;
 }
+
+.ai-content ul { list-style-type: disc; margin-left: 20px; }
+.ai-content li { margin-bottom: 4px; }
 
 @keyframes fadeIn {
     from {
