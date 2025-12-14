@@ -1,6 +1,6 @@
 <template>
     <div class="pb-24 min-h-screen bg-gray-50">
-        <div class="bg-kai-blue text-white p-6 rounded-b-3xl shadow-lg relative overflow-hidden">
+        <div class="bg-kai-blue text-white p-6 pb-12 rounded-b-3xl shadow-lg relative overflow-hidden z-10">
             <div v-if="authStore.isAuthenticated" class="relative z-10">
                 <div class="flex items-center gap-4">
                     <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center text-3xl">
@@ -32,17 +32,44 @@
             </div>
         </div>
 
-        <div v-if="authStore.isAuthenticated" class="p-4">
-            <div class="flex gap-4 border-b border-gray-200 mb-4">
+        <div v-if="authStore.isAuthenticated && myPass" class="px-4 -mt-8 relative z-20 mb-6">
+            <div
+                class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-4 rounded-xl shadow-xl relative overflow-hidden">
+                <div class="relative z-10">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-bold text-lg">🎟️ {{ myPass.pass_reference?.tier_name }}</h3>
+                        <span class="bg-white/20 px-2 py-1 rounded text-xs font-mono">ACTIVE</span>
+                    </div>
+                    <div class="text-sm opacity-90 space-y-1">
+                        <p>Valid until: {{ new Date(myPass.valid_until).toLocaleDateString() }}</p>
+                        <p>Long Haul Quota: <span class="font-bold text-xl">{{ myPass.long_haul_remaining }}</span>
+                            trips left</p>
+                    </div>
+
+                    <div class="mt-3 flex gap-2">
+                        <span v-if="myPass.addons.gojek_bundle"
+                            class="bg-green-600 px-2 py-1 rounded text-[10px] font-bold">🛵 Gojek Bundle</span>
+                        <span v-if="myPass.addons.kai_porter"
+                            class="bg-blue-600 px-2 py-1 rounded text-[10px] font-bold">🧳 Porter</span>
+                    </div>
+                </div>
+                <div class="absolute -right-4 -bottom-4 text-9xl opacity-10">🚆</div>
+            </div>
+        </div>
+
+        <div v-else-if="authStore.isAuthenticated" class="-mt-8 h-8"></div>
+
+        <div v-if="authStore.isAuthenticated" class="px-4 mt-4">
+            <div class="flex gap-4 border-b border-gray-200 mb-4 sticky top-0 bg-gray-50 z-10 pt-2">
                 <button @click="activeTab = 'trips'"
                     :class="{ 'border-b-2 border-kai-blue text-kai-blue font-bold': activeTab === 'trips' }"
-                    class="pb-2 flex-1">Rencana Disimpan</button>
+                    class="pb-2 flex-1 transition-colors">Rencana Disimpan</button>
                 <button @click="activeTab = 'tickets'"
                     :class="{ 'border-b-2 border-kai-blue text-kai-blue font-bold': activeTab === 'tickets' }"
-                    class="pb-2 flex-1">Tiket Saya</button>
+                    class="pb-2 flex-1 transition-colors">Tiket Saya</button>
             </div>
 
-            <div v-if="activeTab === 'trips'" class="space-y-4">
+            <div v-if="activeTab === 'trips'" class="space-y-4 animate-fade-in">
                 <div v-if="savedTrips.length === 0" class="text-center text-gray-400 py-10">
                     Belum ada rencana perjalanan disimpan. <br>
                     <router-link to="/trip-planner" class="text-kai-blue underline">Buat sekarang!</router-link>
@@ -66,7 +93,10 @@
                 </div>
             </div>
 
-            <div v-if="activeTab === 'tickets'" class="space-y-4">
+            <div v-if="activeTab === 'tickets'" class="space-y-4 animate-fade-in">
+                <div v-if="myTickets.length === 0" class="text-center text-gray-400 py-10">
+                    Belum ada tiket aktif.
+                </div>
                 <div v-for="ticket in myTickets" :key="ticket._id"
                     class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden relative">
                     <div
@@ -88,33 +118,10 @@
                         <div class="mt-3 pt-3 border-t border-dashed flex justify-between items-center">
                             <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded font-bold">LUNAS</span>
                             <span class="text-xs text-gray-500">{{ new Date(ticket.travel_date).toLocaleDateString()
-                                }}</span>
+                            }}</span>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div v-if="myPass"
-                class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-4 rounded-xl shadow-lg mb-6 relative overflow-hidden mx-4 -mt-4 z-20">
-                <div class="relative z-10">
-                    <div class="flex justify-between items-center mb-2">
-                        <h3 class="font-bold text-lg">🎟️ {{ myPass.pass_reference?.tier_name }}</h3>
-                        <span class="bg-white/20 px-2 py-1 rounded text-xs font-mono">ACTIVE</span>
-                    </div>
-                    <div class="text-sm opacity-90 space-y-1">
-                        <p>Valid until: {{ new Date(myPass.valid_until).toLocaleDateString() }}</p>
-                        <p>Long Haul Quota: <span class="font-bold text-xl">{{ myPass.long_haul_remaining }}</span>
-                            trips left</p>
-                    </div>
-
-                    <div class="mt-3 flex gap-2">
-                        <span v-if="myPass.addons.gojek_bundle"
-                            class="bg-green-600 px-2 py-1 rounded text-[10px] font-bold">🛵 Gojek Bundle</span>
-                        <span v-if="myPass.addons.kai_porter"
-                            class="bg-blue-600 px-2 py-1 rounded text-[10px] font-bold">🧳 Porter</span>
-                    </div>
-                </div>
-                <div class="absolute -right-4 -bottom-4 text-9xl opacity-10">🚆</div>
             </div>
         </div>
     </div>
@@ -163,8 +170,6 @@ const deleteTrip = async (id) => {
 };
 
 const openTrip = (trip) => {
-    // Kirim data trip ke halaman TripPlanner via State/Query untuk diedit
-    // Cara sederhana: push ke router dengan state
     router.push({
         name: 'TripPlanner',
         state: { savedTripData: JSON.parse(JSON.stringify(trip)) }

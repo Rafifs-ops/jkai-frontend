@@ -1,6 +1,7 @@
 <template>
   <div class="min-h-screen bg-gray-50 text-gray-800 font-sans">
-    <nav class="bg-kai-blue text-white p-4 shadow-md sticky top-0 z-50">
+    <nav v-if="!['DetailPariwisata'].includes(route.name)"
+      class="bg-kai-blue text-white p-4 shadow-md sticky top-0 z-50">
       <div class="container mx-auto flex justify-between items-center">
         <router-link to="/" class="text-xl font-bold flex items-center gap-2">
           🚆 Journey with KAI
@@ -39,29 +40,34 @@
       </div>
     </nav>
 
-    <main class="container mx-auto pb-20"> <router-view />
+    <main class="container mx-auto" :class="hideNav ? 'pb-0' : 'pb-20'">
+      <router-view />
     </main>
 
     <ChatBot />
 
-    <BottomNav v-if="!['Login', 'Register'].includes(route.name)" />
+    <BottomNav v-if="!hideNav" />
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue'; // Tambah computed
 import { useAuthStore } from './stores/auth';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { useLangStore } from './stores/lang';
 import ChatBot from './components/ChatBot.vue';
 import BottomNav from './components/BottomNav.vue';
-import { useRoute } from 'vue-router';
 
 const langStore = useLangStore();
 const authStore = useAuthStore();
 const router = useRouter();
 const showDropdown = ref(false);
 const route = useRoute();
+
+// Computed property untuk logika menyembunyikan nav
+const hideNav = computed(() => {
+  return ['Login', 'Register', 'DetailPariwisata', 'Game'].includes(route.name);
+});
 
 const logout = () => {
   authStore.logout();
