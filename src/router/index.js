@@ -12,6 +12,7 @@ const Register = () => import('../views/Register.vue')
 const TourismList = () => import('../views/TourismList.vue')
 const BlogList = () => import('../views/BlogList.vue')
 const Profile = () => import('../views/Profile.vue')
+const NusantaraPass = () => import('../views/NusantaraPass.vue')
 
 const routes = [
     { path: '/', name: 'Home', component: Home },
@@ -23,7 +24,8 @@ const routes = [
     { path: '/register', name: 'Register', component: Register },
     { path: '/tourism', name: 'TourismList', component: TourismList },
     { path: '/blogs', name: 'BlogList', component: BlogList },
-    { path: '/profile', name: 'Profile', component: Profile }
+    { path: '/profile', name: 'Profile', component: Profile },
+    { path: '/nusantara-pass', name: 'NusantaraPass', component: NusantaraPass }
 ]
 
 const router = createRouter({

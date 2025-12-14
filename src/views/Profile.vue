@@ -93,6 +93,29 @@
                     </div>
                 </div>
             </div>
+
+            <div v-if="myPass"
+                class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-4 rounded-xl shadow-lg mb-6 relative overflow-hidden mx-4 -mt-4 z-20">
+                <div class="relative z-10">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-bold text-lg">🎟️ {{ myPass.pass_reference?.tier_name }}</h3>
+                        <span class="bg-white/20 px-2 py-1 rounded text-xs font-mono">ACTIVE</span>
+                    </div>
+                    <div class="text-sm opacity-90 space-y-1">
+                        <p>Valid until: {{ new Date(myPass.valid_until).toLocaleDateString() }}</p>
+                        <p>Long Haul Quota: <span class="font-bold text-xl">{{ myPass.long_haul_remaining }}</span>
+                            trips left</p>
+                    </div>
+
+                    <div class="mt-3 flex gap-2">
+                        <span v-if="myPass.addons.gojek_bundle"
+                            class="bg-green-600 px-2 py-1 rounded text-[10px] font-bold">🛵 Gojek Bundle</span>
+                        <span v-if="myPass.addons.kai_porter"
+                            class="bg-blue-600 px-2 py-1 rounded text-[10px] font-bold">🧳 Porter</span>
+                    </div>
+                </div>
+                <div class="absolute -right-4 -bottom-4 text-9xl opacity-10">🚆</div>
+            </div>
         </div>
     </div>
 </template>
@@ -108,10 +131,16 @@ const router = useRouter();
 const activeTab = ref('trips');
 const savedTrips = ref([]);
 const myTickets = ref([]);
+const myPass = ref(null);
 
 onMounted(async () => {
     if (authStore.isAuthenticated) {
         fetchData();
+        // Fetch Pass
+        try {
+            const passRes = await api.get('/pass/my-pass');
+            myPass.value = passRes.data;
+        } catch (e) { console.log(e) }
     }
 });
 

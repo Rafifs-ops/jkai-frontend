@@ -39,6 +39,18 @@
             </div>
         </header>
 
+        <div class="px-4 mt-4">
+            <router-link to="/nusantara-pass"
+                class="block bg-gradient-to-r from-red-600 to-red-800 text-white p-4 rounded-xl shadow-lg flex justify-between items-center relative overflow-hidden">
+                <div class="z-10">
+                    <h3 class="font-bold text-lg">🎟️ Nusantara Pass</h3>
+                    <p class="text-xs text-red-200">Ticket War is Live! Get Unlimited Rides.</p>
+                </div>
+                <div class="text-2xl z-10">➔</div>
+                <div class="absolute -right-6 -bottom-10 w-24 h-24 bg-white/10 rounded-full"></div>
+            </router-link>
+        </div>
+
         <section class="mt-6 px-4">
             <h2 class="text-lg font-bold text-kai-blue mb-3">{{ langStore.t('popular') }}</h2>
             <div class="flex overflow-x-auto hide-scroll snap-x py-2 -mx-2 px-2 gap-3">

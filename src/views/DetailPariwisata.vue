@@ -80,6 +80,14 @@
                     </div>
 
                     <div>
+                        <label class="text-xs font-bold text-gray-500">Train Type</label>
+                        <select v-model="bookingForm.type" class="w-full p-2 rounded border">
+                            <option value="long_haul">Long Haul (Jarak Jauh)</option>
+                            <option value="local">Local Train (KRL/LRT)</option>
+                        </select>
+                    </div>
+
+                    <div>
                         <label class="text-xs font-bold text-gray-500">Select Train</label>
                         <select v-model="bookingForm.train" class="w-full p-2 rounded border">
                             <option value="Argo Wilis (Executive)">Argo Wilis (Executive) - IDR 350.000</option>
@@ -122,7 +130,8 @@ const analyzing = ref(false);
 const bookingForm = ref({
     date: '',
     pax: 1,
-    train: 'Argo Wilis (Executive)'
+    train: 'Argo Wilis (Executive)',
+    type: 'long_haul' // Default
 });
 
 // Load Data
@@ -181,21 +190,31 @@ const confirmBooking = async () => {
     if (!bookingForm.value.date) return alert("Please select date");
 
     try {
-        await api.post('/auth/booking', {
+        // Simulasi harga
+        let price = bookingForm.value.type === 'local' ? 5000 : 350000;
+        price = price * bookingForm.value.pax;
+
+        const res = await api.post('/auth/booking', {
             pariwisata_name: pariwisata.value.name,
             train_name: bookingForm.value.train,
-            origin: "Jakarta (Gambir)", // Simulasi default
+            origin: "Jakarta (Gambir)",
             destination: pariwisata.value.nearest_station,
             date: bookingForm.value.date,
             passengers: bookingForm.value.pax,
-            price: 350000 * bookingForm.value.pax // Simulasi harga
+            price: price,
+            train_type: bookingForm.value.type // KIRIM TIPE KERETA
         });
 
-        alert("Booking Success! Check your profile for tickets.");
+        // Tampilkan pesan khusus jika gratis
+        if (res.data.booking.total_price === 0) {
+            alert(`🎉 Booking Success! Ticket is FREE via Nusantara Pass.\nNote: ${res.data.note}`);
+        } else {
+            alert("Booking Success! Check your profile.");
+        }
+
         showBookingModal.value = false;
     } catch (error) {
         alert("Booking Failed");
-        console.error(error);
     }
 };
 
