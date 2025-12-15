@@ -1,57 +1,42 @@
 <template>
   <div class="min-h-screen bg-gray-50 text-gray-800 font-sans">
-    <nav v-if="!['DetailPariwisata'].includes(route.name)"
-      class="bg-kai-blue text-white p-4 shadow-md sticky top-0 z-50">
-      <div class="container mx-auto flex justify-between items-center">
-        <router-link to="/" class="text-xl font-bold flex items-center gap-2">
-          🚆 Journey with KAI
-        </router-link>
 
-        <div class="relative" v-if="authStore.isAuthenticated">
-          <button @click="showDropdown = !showDropdown"
-            class="flex items-center gap-2 bg-blue-800 px-3 py-1 rounded-full text-sm hover:bg-blue-700 transition">
-            <span>👤 {{ authStore.user?.username }}</span>
-            <span class="text-xs">▼</span>
-          </button>
-
-          <div v-if="showDropdown"
-            class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 text-gray-800 animate-fade-in">
-            <div class="px-4 py-2 border-b">
-              <p class="text-xs text-gray-500">Poin Royalti</p>
-              <p class="text-lg font-bold text-kai-orange">{{ authStore.user?.points }} Poin</p>
-            </div>
-            <a href="#" class="block px-4 py-2 hover:bg-gray-100 text-sm">Riwayat Perjalanan (UGC)</a>
-            <button @click="logout"
-              class="block w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-red-500">Logout</button>
-          </div>
+    <nav v-if="!hideNav" class="bg-white px-4 py-3 sticky top-0 z-50 flex justify-between items-center shadow-sm">
+      <router-link to="/" class="flex items-center gap-2">
+        <div class="flex items-end">
+          <img src="assets/img/logo.png" alt="">
         </div>
+      </router-link>
 
-        <router-link v-else to="/login"
-          class="bg-kai-orange px-4 py-1.5 rounded-full text-sm font-bold shadow hover:bg-orange-600 transition">
-          Login
-        </router-link>
-      </div>
-
-      <div class="flex items-center gap-3">
-        <button @click="langStore.toggle()"
-          class="text-xs font-bold border border-white/30 px-2 py-1 rounded hover:bg-white/10">
-          {{ langStore.current === 'en' ? '🇺🇸 EN' : '🇮🇩 ID' }}
+      <div class="flex items-center gap-4">
+        <button @click="langStore.toggle()" class="text-xs font-bold text-gray-400 hover:text-kai-blue">
+          {{ langStore.current === 'en' ? 'EN' : 'ID' }}
         </button>
+
+        <button v-if="authStore.isAuthenticated" @click="logout" class="text-gray-400 hover:text-red-500">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" x2="9" y1="12" y2="12" />
+          </svg>
+        </button>
+
+        <router-link v-else to="/login" class="text-sm font-bold text-kai-blue">Login</router-link>
       </div>
     </nav>
 
-    <main class="container mx-auto" :class="hideNav ? 'pb-0' : 'pb-20'">
+    <main class="container mx-auto max-w-md" :class="hideNav ? 'pb-0' : 'pb-24'">
       <router-view />
     </main>
 
     <ChatBot />
-
     <BottomNav v-if="!hideNav" />
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'; // Tambah computed
+import { ref, computed } from 'vue';
 import { useAuthStore } from './stores/auth';
 import { useRouter, useRoute } from 'vue-router';
 import { useLangStore } from './stores/lang';
@@ -61,17 +46,16 @@ import BottomNav from './components/BottomNav.vue';
 const langStore = useLangStore();
 const authStore = useAuthStore();
 const router = useRouter();
-const showDropdown = ref(false);
 const route = useRoute();
 
-// Computed property untuk logika menyembunyikan nav
 const hideNav = computed(() => {
   return ['Login', 'Register', 'DetailPariwisata', 'Game'].includes(route.name);
 });
 
 const logout = () => {
-  authStore.logout();
-  showDropdown.value = false;
-  router.push('/login');
+  if (confirm('Are you sure want to logout?')) {
+    authStore.logout();
+    router.push('/login');
+  }
 };
 </script>
